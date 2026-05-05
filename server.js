@@ -19,7 +19,7 @@ connectDB();
 app.use("/api", authRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/contact", contactRoutes);
-// app.use("/api/query", queryRoutes);
+app.use("/api/query", queryRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("Server running on port " + process.env.PORT);
