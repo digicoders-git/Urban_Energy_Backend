@@ -8,7 +8,7 @@ const {
   deleteQuery,
 } = require("../controllers/queryController");
 
-const { validateQuery } = require("../middleware/queryMiddleware");
+const { validateQuery } = require("../middleware/querymiddleware");
 
 // USER (with validation)
 router.post("/add", validateQuery, createQuery);

@@ -10,7 +10,7 @@ const {
   incrementViews,
 } = require("../controllers/blogController");
 
-const { validateBlog, validateObjectId } = require("../middleware/blogMiddleware");
+const { validateBlog, validateObjectId } = require("../middleware/blogmiddleware");
 const protect = require("../middleware/authmiddleware");
 
 // CREATE BLOG (protected)

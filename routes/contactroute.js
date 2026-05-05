@@ -8,7 +8,7 @@ const {
   deleteContact,
 } = require("../controllers/contactController");
 
-const { validateContact } = require("../middleware/contactMiddleware");
+const { validateContact } = require("../middleware/contactmiddleware");
 
 // ======================
 // USER ROUTE
