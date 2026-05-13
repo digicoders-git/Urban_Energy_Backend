@@ -1,0 +1,521 @@
+{
+  "info": {
+    "name": "Urban Energy API",
+    "description": "Complete API collection for Urban Energy Backend — Base URL: http://localhost:5000/api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "contact_id", "value": "" },
+    { "key": "query_id", "value": "" },
+    { "key": "quote_id", "value": "" },
+    { "key": "blog_id", "value": "" },
+    { "key": "partner_id", "value": "" },
+    { "key": "review_id", "value": "" },
+    { "key": "notif_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('token', res.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"mobile\": \"9876543210\",\n  \"address\": \"Mumbai, Maharashtra\",\n  \"role\": \"Super Admin\",\n  \"avatar\": \"\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/profile", "host": ["{{base_url}}"], "path": ["auth", "profile"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"admin123\",\n  \"newPassword\": \"newpass456\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/password", "host": ["{{base_url}}"], "path": ["auth", "password"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📞 Contacts",
+      "item": [
+        {
+          "name": "Get All Contacts (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/contacts", "host": ["{{base_url}}"], "path": ["contacts"] }
+          }
+        },
+        {
+          "name": "Submit Contact (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res._id) pm.collectionVariables.set('contact_id', res._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Sharma\",\n  \"phone\": \"9876543210\",\n  \"email\": \"rahul.sharma@gmail.com\",\n  \"city\": \"Jaipur\",\n  \"bill\": 5000,\n  \"message\": \"I am interested in rooftop solar installation for my home.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/contacts", "host": ["{{base_url}}"], "path": ["contacts"] }
+          }
+        },
+        {
+          "name": "Update Contact Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Contacted\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/contacts/{{contact_id}}/status", "host": ["{{base_url}}"], "path": ["contacts", "{{contact_id}}", "status"] }
+          }
+        },
+        {
+          "name": "Delete Contact",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/contacts/{{contact_id}}", "host": ["{{base_url}}"], "path": ["contacts", "{{contact_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "❓ Queries",
+      "item": [
+        {
+          "name": "Get All Queries (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/queries", "host": ["{{base_url}}"], "path": ["queries"] }
+          }
+        },
+        {
+          "name": "Submit Query (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res._id) pm.collectionVariables.set('query_id', res._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Verma\",\n  \"phone\": \"9123456789\",\n  \"city\": \"Pune\",\n  \"requirement\": \"Need 5kW solar system for commercial shop, want subsidy details too.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/queries", "host": ["{{base_url}}"], "path": ["queries"] }
+          }
+        },
+        {
+          "name": "Update Query Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Reviewed\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/queries/{{query_id}}/status", "host": ["{{base_url}}"], "path": ["queries", "{{query_id}}", "status"] }
+          }
+        },
+        {
+          "name": "Delete Query",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/queries/{{query_id}}", "host": ["{{base_url}}"], "path": ["queries", "{{query_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Quotes",
+      "item": [
+        {
+          "name": "Get All Quotes (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/quotes", "host": ["{{base_url}}"], "path": ["quotes"] }
+          }
+        },
+        {
+          "name": "Request a Quote (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res._id) pm.collectionVariables.set('quote_id', res._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Amit Patel\",\n  \"email\": \"amit.patel@gmail.com\",\n  \"phone\": \"9988776655\",\n  \"city\": \"Ahmedabad\",\n  \"systemSize\": \"10kW\",\n  \"type\": \"On-Grid\",\n  \"bill\": \"8000-10000\",\n  \"message\": \"Looking for on-grid solar system for my factory. Please provide best quote.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/quotes", "host": ["{{base_url}}"], "path": ["quotes"] }
+          }
+        },
+        {
+          "name": "Update Quote Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"contacted\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/quotes/{{quote_id}}/status", "host": ["{{base_url}}"], "path": ["quotes", "{{quote_id}}", "status"] }
+          }
+        },
+        {
+          "name": "Delete Quote",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/quotes/{{quote_id}}", "host": ["{{base_url}}"], "path": ["quotes", "{{quote_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Blogs",
+      "item": [
+        {
+          "name": "Get Published Blogs (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/blogs/published", "host": ["{{base_url}}"], "path": ["blogs", "published"] }
+          }
+        },
+        {
+          "name": "View Blog + Increment Views (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/blogs/{{blog_id}}/view", "host": ["{{base_url}}"], "path": ["blogs", "{{blog_id}}", "view"] }
+          }
+        },
+        {
+          "name": "Get All Blogs (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/blogs", "host": ["{{base_url}}"], "path": ["blogs"] }
+          }
+        },
+        {
+          "name": "Create Blog",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res._id) pm.collectionVariables.set('blog_id', res._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Top 5 Benefits of Rooftop Solar in India 2025\",\n  \"category\": \"Education\",\n  \"status\": \"Published\",\n  \"content\": \"<h2>Why Go Solar?</h2><p>Solar energy is the future of India's power sector. With rising electricity bills and government subsidies, rooftop solar has become the most cost-effective solution for homes and businesses.</p><h3>1. Reduce Electricity Bills</h3><p>A 5kW system can save up to ₹4000-6000 per month on your electricity bill.</p><h3>2. Government Subsidy</h3><p>Under PM Surya Ghar Yojana, get up to 40% subsidy on residential solar installations.</p>\",\n  \"thumb\": \"https://example.com/images/solar-blog-thumb.jpg\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/blogs", "host": ["{{base_url}}"], "path": ["blogs"] }
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Top 5 Benefits of Rooftop Solar in India 2025 (Updated)\",\n  \"category\": \"News\",\n  \"status\": \"Published\",\n  \"content\": \"<p>Updated content with latest government subsidy information for 2025.</p>\",\n  \"thumb\": \"https://example.com/images/solar-blog-updated.jpg\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/blogs/{{blog_id}}", "host": ["{{base_url}}"], "path": ["blogs", "{{blog_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/blogs/{{blog_id}}", "host": ["{{base_url}}"], "path": ["blogs", "{{blog_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤝 Partners",
+      "item": [
+        {
+          "name": "Get All Partners (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/partners", "host": ["{{base_url}}"], "path": ["partners"] }
+          }
+        },
+        {
+          "name": "Submit Partner Request (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res._id) pm.collectionVariables.set('partner_id', res._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Suresh Kumar\",\n  \"email\": \"suresh.kumar@solardealers.com\",\n  \"phone\": \"9001122334\",\n  \"city\": \"Lucknow\",\n  \"company\": \"Suresh Solar Dealers Pvt Ltd\",\n  \"type\": \"Dealer\",\n  \"message\": \"We have 5 years of experience in solar product distribution in UP region. Looking to partner with Urban Energy.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/partners", "host": ["{{base_url}}"], "path": ["partners"] }
+          }
+        },
+        {
+          "name": "Update Partner Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/partners/{{partner_id}}/status", "host": ["{{base_url}}"], "path": ["partners", "{{partner_id}}", "status"] }
+          }
+        },
+        {
+          "name": "Delete Partner",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/partners/{{partner_id}}", "host": ["{{base_url}}"], "path": ["partners", "{{partner_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ Reviews",
+      "item": [
+        {
+          "name": "Get Published Reviews (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/reviews/published", "host": ["{{base_url}}"], "path": ["reviews", "published"] }
+          }
+        },
+        {
+          "name": "Get All Reviews (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/reviews", "host": ["{{base_url}}"], "path": ["reviews"] }
+          }
+        },
+        {
+          "name": "Submit Review (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res._id) pm.collectionVariables.set('review_id', res._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Neha Gupta\",\n  \"role\": \"Homeowner, Jaipur\",\n  \"initials\": \"NG\",\n  \"stars\": 5,\n  \"review\": \"Urban Energy installed a 3kW system at my home. The team was very professional and the installation was done in just 2 days. My electricity bill has reduced by 80%. Highly recommended!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/reviews", "host": ["{{base_url}}"], "path": ["reviews"] }
+          }
+        },
+        {
+          "name": "Update Review Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"published\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/reviews/{{review_id}}/status", "host": ["{{base_url}}"], "path": ["reviews", "{{review_id}}", "status"] }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["reviews", "{{review_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notifications",
+      "item": [
+        {
+          "name": "Get Latest 20 Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/notifications", "host": ["{{base_url}}"], "path": ["notifications"] }
+          }
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/notifications/mark-all-read", "host": ["{{base_url}}"], "path": ["notifications", "mark-all-read"] }
+          }
+        },
+        {
+          "name": "Mark One as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/notifications/{{notif_id}}/read", "host": ["{{base_url}}"], "path": ["notifications", "{{notif_id}}", "read"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/dashboard/stats", "host": ["{{base_url}}"], "path": ["dashboard", "stats"] }
+          }
+        },
+        {
+          "name": "Get Recent Contacts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/dashboard/recent-contacts", "host": ["{{base_url}}"], "path": ["dashboard", "recent-contacts"] }
+          }
+        }
+      ]
+    }
+  ]
+}
