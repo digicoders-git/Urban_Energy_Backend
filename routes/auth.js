@@ -35,7 +35,7 @@ router.post('/login',
     if (!admin || !(await admin.comparePassword(password)))
       return res.status(401).json({ message: 'Invalid username or password' })
 
-    const token = jwt.sign({ id: admin._id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
+    const token = jwt.sign({ id: admin._id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' })
     res.json({ token, admin: { username: admin.username, name: admin.name, role: admin.role, mobile: admin.mobile, address: admin.address, avatar: admin.avatar } })
   }
 )
