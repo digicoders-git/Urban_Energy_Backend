@@ -7,8 +7,12 @@ const app = express()
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow all localhost ports + no origin (Postman, curl)
-    if (!origin || /^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true)
+    const allowed = [
+      /^http:\/\/localhost:\d+$/,
+      'https://urban-energy-admin-panel.vercel.app',
+      'https://urban-energy-website.vercel.app',
+    ]
+    if (!origin || allowed.some(r => typeof r === 'string' ? r === origin : r.test(origin))) return callback(null, true)
     callback(new Error('Not allowed by CORS'))
   },
   credentials: true

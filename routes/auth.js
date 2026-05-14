@@ -4,6 +4,24 @@ const { body, validationResult } = require('express-validator')
 const Admin = require('../models/Admin')
 const auth = require('../middleware/auth')
 
+// POST /api/auth/create-admin (one-time, only if no admin exists)
+router.post('/create-admin',
+  body('username').notEmpty().trim(),
+  body('password').isLength({ min: 6 }),
+  body('name').notEmpty().trim(),
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ message: errors.array()[0].msg })
+
+    const exists = await Admin.findOne({})
+    if (exists) return res.status(403).json({ message: 'Admin already exists. Use login instead.' })
+
+    const { username, password, name, role } = req.body
+    const admin = await Admin.create({ username, password, name, role: role || 'Super Admin' })
+    res.status(201).json({ message: 'Admin created successfully', username: admin.username, name: admin.name })
+  }
+)
+
 // POST /api/auth/login
 router.post('/login',
   body('username').notEmpty().trim(),
