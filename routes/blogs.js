@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const { body, validationResult } = require('express-validator')
-const Blog = require('../models/Blog')
+const Blog = require('../models/blog')
 const auth = require('../middleware/auth')
 
 // Public: website ke liye published blogs

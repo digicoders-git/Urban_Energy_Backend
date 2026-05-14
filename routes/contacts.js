@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const { body, validationResult } = require('express-validator')
-const Contact = require('../models/Contact')
+const Contact = require('../models/contact')
 const Notification = require('../models/Notification')
 const auth = require('../middleware/auth')
 
