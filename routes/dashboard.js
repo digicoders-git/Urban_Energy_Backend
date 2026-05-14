@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const auth = require('../middleware/auth')
-const Contact = require('../models/Contact')
-const Query = require('../models/Query')
+const Contact = require('../models/contact')
+const Query = require('../models/query')
 const Quote = require('../models/Quote')
 
 router.get('/stats', auth, async (req, res) => {
