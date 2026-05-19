@@ -30,6 +30,7 @@ app.use('/api/quotes', require('./routes/quotes'))
 app.use('/api/reviews', require('./routes/reviews'))
 app.use('/api/dashboard', require('./routes/dashboard'))
 app.use('/api/notifications', require('./routes/notifications'))
+app.use('/api/applications', require('./routes/applications'))
 
 app.get('/', (req, res) => res.json({ message: 'Urban Energy API running' }))
 
