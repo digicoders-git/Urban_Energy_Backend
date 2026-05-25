@@ -9,7 +9,9 @@ const referrerSchema = new mongoose.Schema({
   referralCode: { type: String, required: true, unique: true, uppercase: true, trim: true },
   city:         { type: String, required: true, trim: true },
   status:       { type: String, enum: ['active', 'inactive'], default: 'active' },
-  totalEarnings:{ type: Number, default: 0 }
+  totalEarnings:{ type: Number, default: 0 },
+  resetPasswordOTP:     { type: String },
+  resetPasswordExpires: { type: Date }
 }, { timestamps: true })
 
 referrerSchema.pre('save', async function (next) {
