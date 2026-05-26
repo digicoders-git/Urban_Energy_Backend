@@ -10,6 +10,12 @@ const referrerSchema = new mongoose.Schema({
   city:         { type: String, required: true, trim: true },
   status:       { type: String, enum: ['active', 'inactive'], default: 'active' },
   totalEarnings:{ type: Number, default: 0 },
+  upiId:        { type: String, trim: true },
+  qrCode: {
+    data:        Buffer,
+    contentType: String,
+    filename:    String
+  },
   resetPasswordOTP:     { type: String },
   resetPasswordExpires: { type: Date }
 }, { timestamps: true })

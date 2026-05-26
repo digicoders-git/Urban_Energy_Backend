@@ -2,9 +2,22 @@ const router = require('express').Router()
 const jwt = require('jsonwebtoken')
 const { body, validationResult } = require('express-validator')
 const nodemailer = require('nodemailer')
+const multer = require('multer')
 const Referrer = require('../models/Referrer')
 const Referral = require('../models/Referral')
 const referrerAuth = require('../middleware/referrerAuth')
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only image files are allowed for QR Code'))
+    }
+  }
+})
 
 // Helper to generate a unique referral code
 const generateReferralCode = async () => {
@@ -20,6 +33,7 @@ const generateReferralCode = async () => {
 
 // POST /api/referrers/register
 router.post('/register',
+  upload.single('qrCode'),
   body('name').notEmpty().trim().withMessage('Name is required'),
   body('phone').notEmpty().trim().withMessage('Phone number is required'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
@@ -29,7 +43,7 @@ router.post('/register',
     if (!errors.isEmpty()) return res.status(400).json({ message: errors.array()[0].msg })
 
     try {
-      const { name, phone, email, password, city } = req.body
+      const { name, phone, email, password, city, upiId } = req.body
 
       // Check if phone already registered
       const phoneExists = await Referrer.findOne({ phone: phone.trim() })
@@ -49,7 +63,13 @@ router.post('/register',
         email: email ? email.trim().toLowerCase() : undefined,
         password,
         city: city.trim(),
-        referralCode
+        referralCode,
+        upiId: upiId ? upiId.trim() : undefined,
+        qrCode: req.file ? {
+          data: req.file.buffer,
+          contentType: req.file.mimetype,
+          filename: req.file.originalname
+        } : undefined
       })
 
       const token = jwt.sign(
@@ -68,7 +88,9 @@ router.post('/register',
           city: referrer.city,
           referralCode: referrer.referralCode,
           status: referrer.status,
-          totalEarnings: 0
+          totalEarnings: 0,
+          upiId: referrer.upiId,
+          hasQrCode: !!(referrer.qrCode && referrer.qrCode.data)
         }
       })
     } catch (error) {
@@ -125,7 +147,9 @@ router.post('/login',
           city: referrer.city,
           referralCode: referrer.referralCode,
           status: referrer.status,
-          totalEarnings
+          totalEarnings,
+          upiId: referrer.upiId,
+          hasQrCode: !!(referrer.qrCode && referrer.qrCode.data)
         }
       })
     } catch (error) {
@@ -153,11 +177,28 @@ router.get('/me', referrerAuth, async (req, res) => {
       city: referrer.city,
       referralCode: referrer.referralCode,
       status: referrer.status,
-      totalEarnings
+      totalEarnings,
+      upiId: referrer.upiId,
+      hasQrCode: !!(referrer.qrCode && referrer.qrCode.data)
     })
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Server error fetching user details.' })
+  }
+})
+
+// GET /api/referrers/qrcode/:id
+router.get('/qrcode/:id', async (req, res) => {
+  try {
+    const referrer = await Referrer.findById(req.params.id)
+    if (!referrer || !referrer.qrCode || !referrer.qrCode.data) {
+      return res.status(404).json({ message: 'QR Code not found' })
+    }
+    res.set('Content-Type', referrer.qrCode.contentType)
+    res.send(referrer.qrCode.data)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Server error fetching QR Code.' })
   }
 })
 

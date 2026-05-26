@@ -45,7 +45,7 @@ router.put('/commission-config', auth, async (req, res) => {
 // ── GET ALL REFERRALS (ADMIN ONLY) ──
 router.get('/', auth, async (req, res) => {
   try {
-    const referrals = await Referral.find().sort({ createdAt: -1 })
+    const referrals = await Referral.find().populate({ path: 'referrerId', select: 'upiId qrCode.contentType' }).sort({ createdAt: -1 })
     res.json(referrals)
   } catch (error) {
     res.status(500).json({ message: 'Server error fetching referrals.' })

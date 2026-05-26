@@ -9,6 +9,16 @@ router.get('/', auth, async (req, res) => {
   res.json(contacts)
 })
 
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const contact = await Contact.findById(req.params.id)
+    if (!contact) return res.status(404).json({ message: 'Contact not found' })
+    res.json(contact)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
 router.post('/', 
   body('name').notEmpty().trim(),
   body('phone').notEmpty().trim(),
