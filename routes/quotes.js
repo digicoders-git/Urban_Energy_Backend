@@ -11,11 +11,12 @@ router.get('/', auth, async (req, res) => {
 router.post('/',
   body('name').notEmpty().trim(),
   body('phone').notEmpty().trim(),
+  body('category').isIn(['residential', 'ongrid', 'offgrid', 'commercial']).optional(),
   async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) return res.status(400).json({ message: errors.array()[0].msg })
     const q = await Quote.create(req.body)
-    Notification.create({ name: q.name, msg: `New quote request: ${q.systemSize || ''} ${q.type || ''}`.trim(), route: '/get-quotes', color: '#FFB800' }).catch(() => {})
+    Notification.create({ name: q.name, msg: `New quote request: ${q.category || 'residential'} - ${q.systemSize || ''} ${q.type || ''}`.trim(), route: '/get-quotes', color: '#FFB800' }).catch(() => {})
     res.status(201).json(q)
   }
 )

@@ -7,6 +7,7 @@ module.exports = mongoose.model('Quote', new mongoose.Schema({
   city:       { type: String, trim: true },
   systemSize: { type: String, trim: true },
   type:       { type: String, trim: true },
+  category:   { type: String, enum: ['residential', 'ongrid', 'offgrid', 'commercial'], default: 'residential', trim: true },
   bill:       { type: String, trim: true },
   message:    { type: String, trim: true },
   status:     { type: String, enum: ['new', 'contacted', 'closed'], default: 'new' },

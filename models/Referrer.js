@@ -8,7 +8,7 @@ const referrerSchema = new mongoose.Schema({
   password:     { type: String, required: true },
   referralCode: { type: String, required: true, unique: true, uppercase: true, trim: true },
   city:         { type: String, required: true, trim: true },
-  status:       { type: String, enum: ['active', 'inactive'], default: 'active' },
+  status:       { type: String, enum: ['pending', 'active', 'inactive'], default: 'pending' },
   totalEarnings:{ type: Number, default: 0 },
   upiId:        { type: String, trim: true },
   qrCode: {

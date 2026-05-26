@@ -6,6 +6,8 @@ const multer = require('multer')
 const Referrer = require('../models/Referrer')
 const Referral = require('../models/Referral')
 const referrerAuth = require('../middleware/referrerAuth')
+const adminAuth = require('../middleware/auth')
+const Notification = require('../models/Notification')
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -72,6 +74,8 @@ router.post('/register',
         } : undefined
       })
 
+      Notification.create({ name: referrer.name, msg: `New referrer registration: ${referrer.phone}`, route: '/referrers', color: '#10b981' }).catch(() => {})
+
       const token = jwt.sign(
         { id: referrer._id, name: referrer.name, referralCode: referrer.referralCode },
         process.env.JWT_SECRET,
@@ -121,6 +125,10 @@ router.post('/login',
       
       if (!referrer || !(await referrer.comparePassword(password))) {
         return res.status(401).json({ message: 'Invalid mobile number/email or password' })
+      }
+
+      if (referrer.status === 'pending') {
+        return res.status(403).json({ message: 'Your account is pending approval. Please wait for admin verification.' })
       }
 
       if (referrer.status === 'inactive') {
@@ -425,6 +433,35 @@ router.post('/reset-password',
     }
   }
 )
+
+// Admin: Get all referrers
+router.get('/admin/all', adminAuth, async (req, res) => {
+  try {
+    const referrers = await Referrer.find().select('-password -qrCode').sort({ createdAt: -1 })
+    res.json(referrers)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Server error fetching referrers.' })
+  }
+})
+
+// Admin: Update referrer status
+router.patch('/admin/:id/status', adminAuth,
+  body('status').isIn(['pending', 'active', 'inactive']),
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ message: errors.array()[0].msg })
+    const referrer = await Referrer.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true }).select('-password -qrCode')
+    if (!referrer) return res.status(404).json({ message: 'Referrer not found' })
+    res.json(referrer)
+  }
+)
+
+// Admin: Delete referrer
+router.delete('/admin/:id', adminAuth, async (req, res) => {
+  await Referrer.findByIdAndDelete(req.params.id)
+  res.json({ message: 'Deleted' })
+})
 
 module.exports = router
 
