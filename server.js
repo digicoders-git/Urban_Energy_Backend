@@ -11,7 +11,8 @@ app.use(cors({
       /^http:\/\/localhost:\d+$/,
       'https://urban-energy-admin-panel.vercel.app',
       'https://urban-energy-website.vercel.app',
-      'https://api.vaulixsolar.in',
+      'https://admin.vaulixsolar.in',
+      'https://vaulixsolar.in',
     ]
     if (!origin || allowed.some(r => typeof r === 'string' ? r === origin : r.test(origin))) return callback(null, true)
     callback(new Error('Not allowed by CORS'))
