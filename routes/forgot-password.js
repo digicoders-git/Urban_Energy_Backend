@@ -10,11 +10,13 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
   },
+  connectionTimeout: 5000,
+  socketTimeout: 5000,
   pool: {
-    maxConnections: 1,
+    maxConnections: 5,
     maxMessages: 100,
-    rateDelta: 1000,
-    rateLimit: 1
+    rateDelta: 100,
+    rateLimit: 5
   }
 })
 
