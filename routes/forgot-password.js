@@ -37,6 +37,7 @@ function generateOTP() {
 // Send OTP email
 function sendOTPEmail(email, otp) {
   return new Promise((resolve) => {
+    console.log('📧 Attempting to send OTP to:', email)
     transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
@@ -50,10 +51,10 @@ function sendOTPEmail(email, otp) {
       `
     }, (error, info) => {
       if (error) {
-        console.error('Email failed:', error)
+        console.error('❌ Email failed:', error.message, error.code)
         resolve(false)
       } else {
-        console.log('Email sent:', info.response)
+        console.log('✅ Email sent:', info.response)
         resolve(true)
       }
     })
