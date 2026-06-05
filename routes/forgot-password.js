@@ -32,9 +32,9 @@ function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
-// Send OTP email (non-blocking)
-async function sendOTPEmail(email, otp) {
-  try {
+// Send OTP email
+function sendOTPEmail(email, otp) {
+  return new Promise((resolve) => {
     transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
@@ -49,15 +49,14 @@ async function sendOTPEmail(email, otp) {
     }, (error, info) => {
       if (error) {
         console.error('Email failed:', error)
+        resolve(false)
       } else {
         console.log('Email sent:', info.response)
+        resolve(true)
       }
     })
-    return true
-  } catch (error) {
-    console.error('Email error:', error)
-    return false
-  }
+  })
+}
 
 // POST /api/forgot-password - Generate OTP
 router.post('/',
