@@ -22,6 +22,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Routes
 app.use('/api/auth', require('./routes/auth'))
+app.use('/api/forgot-password', require('./routes/forgot-password'))
 app.use('/api/contacts', require('./routes/contacts'))
 app.use('/api/referrals', require('./routes/referrals'))
 app.use('/api/referrers', require('./routes/referrers'))
