@@ -1,11 +1,63 @@
 const router = require('express').Router()
 const { body, validationResult } = require('express-validator')
+const nodemailer = require('nodemailer')
 const Referrer = require('../models/Referrer')
+
+// Email transporter configuration
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE || 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  },
+  pool: {
+    maxConnections: 1,
+    maxMessages: 100,
+    rateDelta: 1000,
+    rateLimit: 1
+  }
+})
+
+// Verify transporter connection
+transporter.verify((error, success) => {
+  if (error) {
+    console.log('Email transporter error:', error)
+  } else {
+    console.log('Email service ready')
+  }
+})
 
 // Generate 6-digit OTP
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
+
+// Send OTP email (non-blocking)
+async function sendOTPEmail(email, otp) {
+  try {
+    transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Urban Energy - Password Reset OTP',
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Your OTP for password reset is:</p>
+        <h3 style="color: #007bff;">${otp}</h3>
+        <p>This OTP is valid for 10 minutes.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `
+    }, (error, info) => {
+      if (error) {
+        console.error('Email failed:', error)
+      } else {
+        console.log('Email sent:', info.response)
+      }
+    })
+    return true
+  } catch (error) {
+    console.error('Email error:', error)
+    return false
+  }
 
 // POST /api/forgot-password - Generate OTP
 router.post('/',
@@ -28,10 +80,15 @@ router.post('/',
       referrer.resetPasswordExpires = expiresAt
       await referrer.save()
 
-      // Send OTP (for now return in response, in production send via email/SMS)
+      // Send OTP email
+      const emailSent = await sendOTPEmail(email, otp)
+      
+      if (!emailSent) {
+        return res.status(500).json({ message: 'Failed to send OTP email. Please try again or contact support.' })
+      }
+
       res.json({ 
-        message: 'OTP generated successfully',
-        otp: process.env.NODE_ENV === 'development' ? otp : undefined,
+        message: 'OTP sent to your email',
         email: email,
         expiresIn: '10 minutes'
       })
