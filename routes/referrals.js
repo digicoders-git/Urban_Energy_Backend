@@ -10,7 +10,7 @@ router.get('/commission-config', async (req, res) => {
   try {
     let config = await CommissionConfig.findOne()
     if (!config) {
-      config = { residential: 1000, commercial: 5000, society: 3000, offGrid: 2000 }
+      config = { residential: 1999, commercial: 4999, society: 4999, offGrid: 4999 }
     }
     res.json(config)
   } catch (error) {
@@ -87,7 +87,7 @@ router.post('/',
       const { refereeType } = req.body
       let config = await CommissionConfig.findOne()
       if (!config) {
-        config = { residential: 1000, commercial: 5000, society: 3000, offGrid: 2000 }
+        config = { residential: 1999, commercial: 4999, society: 4999, offGrid: 4999 }
       }
 
       // Map connection type to matching config key
@@ -98,7 +98,7 @@ router.post('/',
         'off grid': 'offGrid',
       }
       const key = typeMap[refereeType.toLowerCase()] || 'residential'
-      const commissionAmount = config[key] !== undefined ? config[key] : 1000
+      const commissionAmount = config[key] !== undefined ? config[key] : 1999
 
       const referral = await Referral.create({
         ...req.body,
